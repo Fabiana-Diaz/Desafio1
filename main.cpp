@@ -1,5 +1,7 @@
+
 #include <fstream>
 #include <iostream>
+#include <QString>
 #include <QCoreApplication>
 #include <QImage>
 #include "nombre_de_funciones.h"
@@ -8,53 +10,41 @@ using namespace std;
 
 int main()
 {
-    // Definición de rutas de archivo de entrada (imagen original) y salida (imagen modificada)
-    QString archivoEntrada = "I_O.bmp";
+    int numEnmascaramientos;
+    cout << "Ingrese el número de enmascaramientos hechos: ";
+    cin >> numEnmascaramientos;
+
+    QString archivoEntrada = "P" + QString::number(numEnmascaramientos) + ".bmp";
     QString archivoSalida = "I_D.bmp";
-    QString imagen_comp = "I_M.bmp";
+    QString archivoXOR = "I_M.bmp";
+    QString archivoMascara = "M.bmp";
 
-    // Variables para almacenar las dimensiones de la imagen
-    int height = 0; //altura en pixeles
-    int width = 0;  //ancho en pixeles
+    int width = 0, height = 0;
 
-    // Carga la imagen BMP en memoria dinámica y obtiene ancho y alto
-    unsigned char *pixelData = loadPixels(archivoEntrada, width, height);
-    unsigned char *pixelData2 = loadPixels(imagen_comp, width, height);
+    // Cargar imágenes
+    unsigned char* pixelData = loadPixels(archivoEntrada, width, height);
+    unsigned char* pixelMascara = loadPixels(archivoMascara, width, height);
+    unsigned char* pixelXor = loadPixels(archivoXOR, width, height);
 
-
-    // Variables para almacenar la semilla y el número de píxeles leídos del archivo de enmascaramiento
-    int seed = 0;
-    int n_pixels = 0;
-
-    // Carga los datos de enmascaramiento desde un archivo .txt (semilla + valores RGB)
-    unsigned int *maskingData = loadSeedMasking("M1.txt", seed, n_pixels);
-
-    // Muestra en consola los primeros valores RGB leídos desde el archivo de enmascaramiento
-    for (int i = 0; i < n_pixels * 3; i += 3) {
-        cout << "Pixel " << i / 3 << ": ("
-             << maskingData[i] << ", "
-             << maskingData[i + 1] << ", "
-             << maskingData[i + 2] << ")" << endl;
+    if (!pixelData || !pixelMascara || !pixelXor) {
+        cout << "Error al cargar una de las imágenes." << endl;
+        return -1;
     }
 
-    int total_bits = (height * width * 3);
-    unsigned char* resultado = aplicarXOR(pixelData, pixelData2, total_bits);
+    int totalBytes = width * height * 3;
 
-    // Exporta la imagen modificada a un nuevo archivo BMP
-    bool exportI = exportImage(resultado, width, height, archivoSalida);
+    // Exportar la imagen reconstruida
+    if (!exportImage(pixelData, width, height, archivoSalida)) {
+        cout << "Error al exportar la imagen." << endl;
+    }
 
-    // Muestra si la exportación fue exitosa (true o false)
-    cout << exportI << endl;
-
-    // Libera la memoria usada para los píxeles y los datos de enmascaramiento
+    // Liberar memoria
     delete[] pixelData;
-    pixelData = nullptr;
+    delete[] pixelMascara;
+    delete[] pixelXor;
 
-    if (maskingData != nullptr) {
-        delete[] maskingData;
-        maskingData = nullptr;
-    }
-
-    return 0; // Fin del programa
+    return 0;
 }
+
+
 
