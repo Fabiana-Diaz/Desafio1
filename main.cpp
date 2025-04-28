@@ -1,4 +1,3 @@
-
 #include <fstream>
 #include <iostream>
 #include <QString>
@@ -32,6 +31,9 @@ int main()
     }
 
     int totalBytes = width * height * 3;
+
+    // Procesar archivos
+    procesarArchivos(numEnmascaramientos, pixelData, pixelMascara, pixelXor, totalBytes); // función que invoca a las demás para que corra el codigo
 
     // Exportar la imagen reconstruida
     if (!exportImage(pixelData, width, height, archivoSalida)) {
