@@ -21,4 +21,6 @@ bool aplicarRotacion(unsigned char* img, unsigned char* mascara, unsigned int* d
 bool verificarDesplazamiento(unsigned char* img, unsigned char* mascara, unsigned int* datosTxt, int tamMascara, int semilla, int nBits, bool izquierda);
 bool aplicarDesplazamiento(unsigned char* img, unsigned char* mascara, unsigned int* datosTxt, int totalBytes, int tamMascara, int semilla, int nBits, bool izquierda, int orden);
 
+void aplicarTransformaciones(unsigned char* img, unsigned char* mascara, unsigned int* datosTxt, unsigned char* imgXor, int totalBytes, int tamMascara, int semilla, int orden);
+
 #endif // NOMBRE_DE_FUNCIONES_H
