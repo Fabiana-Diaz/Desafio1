@@ -18,4 +18,7 @@ bool aplicarXOR(unsigned char* img, unsigned char* mascara, unsigned int* datosT
 bool verificarRotacion(unsigned char* img, unsigned char* mascara, unsigned int* datosTxt, int tamMascara, int semilla, int nBits, bool izquierda);
 bool aplicarRotacion(unsigned char* img, unsigned char* mascara, unsigned int* datosTxt, int totalBytes, int tamMascara, int semilla, int nBits, bool izquierda, int orden);
 
+bool verificarDesplazamiento(unsigned char* img, unsigned char* mascara, unsigned int* datosTxt, int tamMascara, int semilla, int nBits, bool izquierda);
+bool aplicarDesplazamiento(unsigned char* img, unsigned char* mascara, unsigned int* datosTxt, int totalBytes, int tamMascara, int semilla, int nBits, bool izquierda, int orden);
+
 #endif // NOMBRE_DE_FUNCIONES_H
