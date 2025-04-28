@@ -150,3 +150,32 @@ bool aplicarDesplazamiento(unsigned char* img, unsigned char* mascara, unsigned 
     return false; // No se aplicó la operación porque la verificación falló
 }
 
+// Función que intenta aplicar diferentes tipos de transformaciones sobre la imagen
+// hasta encontrar la operación correcta que coincide con los datos del archivo txt
+void aplicarTransformaciones(unsigned char* img, unsigned char* mascara, unsigned int* datosTxt, unsigned char* imgXor, int totalBytes, int tamMascara, int semilla, int orden) {
+    // Iterar sobre los métodos posibles: 1 (XOR), 2 (Rotaciones), 3 (Desplazamientos)
+    for (int metodo = 1; metodo <= 3; metodo++) {
+        bool exito = false;
+        switch (metodo) {
+        case 1:
+            // Intentar aplicar la operacion XOR
+            exito = aplicarXOR(img, mascara, datosTxt, imgXor, totalBytes, tamMascara, semilla, orden);
+            if (exito) return; // Si tiene éxito, salir de la función
+            break;
+        case 2:
+            // Intentar aplicar rotaciones de 1 a 7 bits, primero a la izquierda y luego a la derecha
+            for (int rot = 1; rot < 8; rot++) {
+                if (aplicarRotacion(img, mascara, datosTxt, totalBytes, tamMascara, semilla, rot, true, orden)) return; // Rotación izquierda
+                if (aplicarRotacion(img, mascara, datosTxt, totalBytes, tamMascara, semilla, rot, false, orden)) return; // Rotación derecha
+            }
+            break;
+        case 3:
+             // Intentar aplicar desplazamientos de 1 a 7 bits, primero a la izquierda y luego a la derecha
+            for (int desp = 1; desp < 8; desp++) {
+                if (aplicarDesplazamiento(img, mascara, datosTxt, totalBytes, tamMascara, semilla, desp, true, orden)) return; // Desplazamiento izquierda
+                if (aplicarDesplazamiento(img, mascara, datosTxt, totalBytes, tamMascara, semilla, desp, false, orden)) return; // Desplazamiento derecha
+            }
+            break;
+        }
+    }
+}
