@@ -94,4 +94,29 @@ bool aplicarXOR(unsigned char* img, unsigned char* mascara, unsigned int* datosT
     return false; //retorna true si aplico la operacion y false si falló
 }
 
+//comprueba si al aplicar la rotación y sumar los datos con la mascara estos coinciden con el txt
+bool verificarRotacion(unsigned char* img, unsigned char* mascara, unsigned int* datosTxt, int tamMascara, int semilla, int nBits, bool izquierda) {
+for (int i = 0; i < tamMascara; i++) { //recorre los bytes de la imagen
+    unsigned char dato = izquierda ? (img[semilla + i] << nBits) | (img[semilla + i] >> (8 - nBits)) : // si es true rota a la izquierda, si es false a la izquierda
+                             (img[semilla + i] >> nBits) | (img[semilla + i] << (8 - nBits));
+    int suma = static_cast<int>(dato) + static_cast<int>(mascara[i]); //sumamos el dato rotado más la mascara, estos valores los convertimos en enetos
+    if (!compararValores(suma, datosTxt[i])) return false; // verificamos si los datos coinciden o no
+}
+return true; //retornamos true si todo esta bien
+}
+
+//función para rotar toda la imagen
+bool aplicarRotacion(unsigned char* img, unsigned char* mascara, unsigned int* datosTxt, int totalBytes, int tamMascara, int semilla, int nBits, bool izquierda, int orden) {
+    if (verificarRotacion(img, mascara, datosTxt, tamMascara, semilla, nBits, izquierda)) { //se verifica que sean los datos esperados
+        for (int i = 0; i < totalBytes; ++i) {
+            img[i] = izquierda ? (img[i] << nBits) | (img[i] >> (8 - nBits)) : //se aplica rotación a cada bit de la imagen, ya sea izquierda si es true o derecha si es false
+                         (img[i] >> nBits) | (img[i] << (8 - nBits));
+        }
+        string dir = izquierda ? "derecha" : "izquierda"; // muestra en consola la rotacion que se hico
+        cout << orden << ") La operación aplicada fue una rotación de " << nBits << " bits a la " << dir << "." << endl;
+        return true;
+    }
+    return false; //si todo estuvo bien se retorna true y si todo estubo mal, false
+}
+
 
