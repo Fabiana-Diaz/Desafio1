@@ -179,3 +179,27 @@ void aplicarTransformaciones(unsigned char* img, unsigned char* mascara, unsigne
         }
     }
 }
+// Función que procesa todos los archivos de enmascaramiento (.txt) aplicando transformaciones a la imagen
+void procesarArchivos(int nArchivos, unsigned char* img, unsigned char* mascara, unsigned char* imgXor, int totalBytes) {
+    // Recorre todos los archivos de enmascaramiento desde el número más alto hasta 0
+    for (int j = nArchivos; j >= 0; j--) {
+        // Construir el nombre del archivo de texto correspondiente
+        QString nombreArchivo = "M" + QString::number(j) + ".txt";
+        int seed = 0, n_pixels = 0;
+        // Cargar la semilla y los datos de enmascaramiento desde el archivo txt
+        unsigned int* datosMascara = loadSeedMasking(nombreArchivo.toStdString().c_str(), seed, n_pixels);
+        if (datosMascara != nullptr) {
+            int tamMascara = n_pixels * 3; // Tamaño real del arreglo de máscara (3 componentes por pixel)
+            // Intentar aplicar las transformaciones que reconstruyan los datos esperados
+            aplicarTransformaciones(img, mascara, datosMascara, imgXor, totalBytes, tamMascara, seed, j + 1);
+            // Liberar la memoria dinámica utilizada para los datos de la máscara
+            delete[] datosMascara;
+        } else {
+             // Si el archivo no pudo ser cargado, reportar error y terminar el proceso
+            cout << "Error al cargar el archivo: " << nombreArchivo.toStdString() << endl;
+            break;
+        }
+        // Separador visual en consola para indicar cambio de archivo
+        cout << "" << endl;
+    }
+}
