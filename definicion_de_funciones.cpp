@@ -119,4 +119,34 @@ bool aplicarRotacion(unsigned char* img, unsigned char* mascara, unsigned int* d
     return false; //si todo estuvo bien se retorna true y si todo estubo mal, false
 }
 
+// Función que verifica si al desplazar los bits de la imagen (a izquierda o derecha) y sumar la máscara,
+// se obtiene el mismo resultado que los datos esperados (del archivo txt)
+
+bool verificarDesplazamiento(unsigned char* img, unsigned char* mascara, unsigned int* datosTxt, int tamMascara, int semilla, int nBits, bool izquierda) {
+    for (int i = 0; i < tamMascara; i++) {
+        // Aplica desplazamiento: si 'izquierda' es true, desplaza hacia la izquierda; si no, hacia la derecha
+        unsigned char dato = izquierda ? img[semilla + i] << nBits : img[semilla + i] >> nBits;
+        // Suma el dato desplazado con la máscara
+        int suma = static_cast<int>(dato) + static_cast<int>(mascara[i]);
+        // Compara la suma con el dato esperado del archivo txt
+        if (!compararValores(suma, datosTxt[i])) return false; // Retorna false si algún dato no coincide
+    }
+    return true; //Retorna true si todos los datos coinciden
+}
+
+// Función que aplica un desplazamiento a todos los bytes de la imagen si la verificación es exitosa
+bool aplicarDesplazamiento(unsigned char* img, unsigned char* mascara, unsigned int* datosTxt, int totalBytes, int tamMascara, int semilla, int nBits, bool izquierda, int orden) {
+    // Verifica si el desplazamiento produciría los resultados esperados
+    if (verificarDesplazamiento(img, mascara, datosTxt, tamMascara, semilla, nBits, izquierda)) {
+        // Si la verificación es correcta, desplaza todos los bytes de la imagen
+        for (int i = 0; i < totalBytes; ++i) {
+            img[i] = izquierda ? img[i] << nBits : img[i] >> nBits;
+        }
+        // Imprimir en consola el tipo de desplazamiento realizado
+        string dir = izquierda ? "derecha" : "izquierda";
+        cout << orden << ") La operación aplicada fue un desplazamiento de " << nBits << " bits a la " << dir << "." << endl;
+        return true; // Operación aplicada correctamente
+    }
+    return false; // No se aplicó la operación porque la verificación falló
+}
 
